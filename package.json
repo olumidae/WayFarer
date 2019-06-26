@@ -1,0 +1,35 @@
+{
+  "name": "wayfarer",
+  "version": "1.0.0",
+  "description": "WayFarer is a public bus transportation booking server",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/olumidae/WayFarer.git"
+  },
+  "author": "Olumide Omitiran",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/olumidae/WayFarer/issues"
+  },
+  "homepage": "https://github.com/olumidae/WayFarer#readme",
+  "dependencies": {
+    "@babel/cli": "^7.4.4",
+    "@babel/core": "^7.4.5",
+    "@babel/node": "^7.4.5",
+    "@babel/preset-env": "^7.4.5",
+    "@babel/register": "^7.4.4",
+    "express": "^4.17.1"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "eslint": "^6.0.1",
+    "eslint-config-airbnb-base": "^13.1.0",
+    "eslint-plugin-import": "^2.18.0",
+    "mocha": "^6.1.4",
+    "nodemon": "^1.19.1"
+  }
+}
