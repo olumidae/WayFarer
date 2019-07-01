@@ -20,17 +20,8 @@ const signupValidator = (user) => {
   return jo.validate(user, signupFormat);
 };
 
-const verifyUserValidator = (user) => {
-  const updateFormat = {
-    status: jo.string().valid('verified', 'unverified'),
-    verifiedBy: jo.string(),
-
-  };
-  return jo.validate(user, updateFormat);
-};
 
 export default {
-  verifyUserValidator,
   signupValidator,
   UserLoginValidator,
 };

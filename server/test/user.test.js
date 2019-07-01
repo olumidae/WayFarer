@@ -15,7 +15,8 @@ describe('Register new user', () => {
         last_name: 'Omitiran',
         email: 'oomitiran@gmail.com',
         password: 'password@123',
-      }).end((err, res) => {
+      }).end((err, res) => { 
+        expect(res.status).to.be.equal(201);
         expect(res.body.status).to.equal('success');
         expect(res.body).to.have.property('status');
         expect(res.body).to.have.property('data');
@@ -74,6 +75,61 @@ describe('Register new user', () => {
         password: 'password@123',
       })
       .end((err, res) => {
+        expect(res.body.status).to.equal('error');
+        expect(res.body).to.have.property('status');
+        expect(res.body).to.have.property('error');
+        expect(res.body).to.be.an('object');
+        done();
+      });
+  });
+});
+
+
+describe('Login', () => {
+  it('Lets new and existing users login', (done) => {
+    chai.request(app)
+      .post('/api/v1/auth/signin')
+      .send({
+        email: 'oomitiran@gmail.com',
+        password: 'password@123',
+      })
+      .end((err, res) => {
+        expect(res.status).to.be.equal(200);
+        expect(res.body.status).to.equal('success');
+        expect(res.body).to.have.property('status');
+        expect(res.body).to.have.property('data');
+        expect(res.body.data).to.have.property('user_id');
+        expect(res.body.data).to.have.property('token');
+        expect(res.body).to.be.an('object');
+        done();
+      });
+  });
+
+  it('All fields are required', (done) => {
+    chai.request(app)
+      .post('/api/v1/auth/signin')
+      .send({
+        email: '',
+        password: '',
+      })
+      .end((err, res) => {
+        expect(res.body).to.have.property('status');
+        expect(res.body).to.have.property('error');
+        expect(res.body).to.be.an('object');
+        done();
+      });
+  });
+
+
+  it('Incorrect Password', (done) => {
+    chai.request(app)
+      .post('/api/v1/auth/signin')
+      .send({
+        email: 'oomitiran@gmail.com',
+        password: 'secret',
+      })
+      .end((err, res) => {
+        expect(res.status).to.be.equal(401);
         expect(res.body.status).to.equal('error');
         expect(res.body).to.have.property('status');
         expect(res.body).to.have.property('error');
