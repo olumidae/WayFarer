@@ -1,5 +1,7 @@
 import jwt from 'jsonwebtoken';
+import bcrypt from 'bcrypt';
 import dotenv from 'dotenv';
+import pool from '../models/db/db';
 import userModel from '../models/userModel';
 import authenticateUser from '../helpers/authenticateUser';
 
@@ -43,73 +45,44 @@ const User = {
 
     });
   },
-  
-  async logIn(req, res) {
+
+  async logInUser(req, res) {
     // Validating
     const { error } = authenticateUser.UserLoginValidator(req.body);
 
-    if (error) {
-      return res.status(400).json({ status: 400, error: error.details[0].message.slice(0, 70) });
-    }
-    const queryText = 'SELECT * FROM users WHERE email = $1';
-    const updateText = 'UPDATE users SET isloggedin = true WHERE email=$1 RETURNING *';
-    const { email, password } = req.body;
+    if (error) return res.status(400).json({ status: 400, error: error.details[0].message });
 
+    const queryText = 'SELECT * FROM users WHERE email = $1';
+
+    const { email, password } = req.body;
 
     try {
       // Select all user record where email is equal to the email in the db
-      const { rows } = await db.query(queryText, [email]);
+      const { rows } = await pool.query(queryText, [email]);
 
-
-      // check if user exist in database
-      if (!rows[0].email) {
-        res.status(400).json({ status: 400, error: 'Email and/or password is incorrect' });
-      }
-
+      if (!rows[0].email) return res.status(401).json({ status: 'error', error: 'Email and/or password is incorrect' });
 
       const comparePassword = bcrypt.compareSync(password, rows[0].password);
 
-      if (!comparePassword) {
-        return res.status(401).json({
-          status: 401,
-          error: 'Password incorrect',
-        });
-      }
+      if (!comparePassword) return res.status(401).json({ status: 'error', error: 'Password incorrect' });
 
-      const { rows: rowsUpdate } = await db.query(updateText, [email]);
+      const token = jwt.sign({ id: rows[0].id, email }, secret);
 
-      const token = webtoken.sign({
-        id: rows[0].id,
-        email,
-      }, secret);
-
-      //rowsUpdate[0].isloggedin = true;
-      return res
-        .status(200)
-        .json({
-          status: 200,
-          message: 'Logged In Successfully',
-          data: {
-            token,
-            id: rows[0].id,
-            firstName: rowsUpdate[0].firstname,
-            lastName: rowsUpdate[0].lastname,
-            email: rowsUpdate[0].email,
-            address: rowsUpdate[0].address,
-            status: rowsUpdate[0].status,
-            isLoggedIn: rowsUpdate[0].isloggedin,
-            isAdmin: rowsUpdate[0].isadmin,
-          },
-        });
+      return res.status(200).json({
+        status: 'success',
+        data: {
+          user_id: rows[0].id,
+          is_admin: rows[0].is_admin,
+          token,
+        },
+      });
     } catch (e) {
       return res.status(500).json({
-        status: 500,
+        status: '500',
         error: 'Internal server error',
       });
     }
-  }
-
-
+  },
 
 };
 
