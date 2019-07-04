@@ -25,12 +25,7 @@ const Bus = {
       return res.status(200).json({
         status: 'success',
         data: {
-          id: rowsInsert[0].id,
-          number_plate: rowsInsert[0].number_plate,
-          manufacturer: rowsInsert[0].manufacturer,
-          model: rowsInsert[0].model,
-          year: rowsInsert[0].year,
-          capacity: rowsInsert[0].capacity,
+          rowsInsert,
         },
       });
     } catch (e) {

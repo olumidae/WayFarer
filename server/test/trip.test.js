@@ -49,6 +49,7 @@ describe('Create new trip', () => {
         expect(res.status).be.equal(400);
         expect(res.body).to.have.property('status');
         expect(res.body).to.have.property('error');
+        done();
       });
   });
 
