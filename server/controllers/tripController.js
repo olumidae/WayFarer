@@ -2,8 +2,8 @@
 /* eslint-disable camelcase */
 import uuid from 'uuid';
 import moment from 'moment';
-import pool from '../db';
-import authenticateTrip from '../../../helpers/authenticateTrip';
+import pool from '../models/db/db';
+import authenticateTrip from '../helpers/authenticateTrip';
 
 const Trip = {
 

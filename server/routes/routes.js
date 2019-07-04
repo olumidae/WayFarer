@@ -1,13 +1,12 @@
 import express from 'express';
-// import User from '../controllers/userController';
-import User from '../models/db/controller/user';
-import Bus from '../models/db/controller/bus';
-import Trip from '../models/db/controller/trip';
+import User from '../controllers/userController';
+import Bus from '../controllers/busController';
+import Trip from '../controllers/tripController';
 
 const router = express.Router();
 
-// router.post('/auth/signup', User.signUp);
 router.post('/auth/signup', User.signUpUser);
+
 router.post('/auth/signin', User.logInUser);
 
 router.post('/bus', Bus.createBus);
