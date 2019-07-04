@@ -13,5 +13,6 @@ router.post('/auth/signin', User.logInUser);
 router.post('/bus', Bus.createBus);
 
 router.post('/trips', Trip.createTrip);
+router.get('/trips', Trip.getAllTrips);
 
 export default router;

@@ -1,5 +1,12 @@
 import jo from 'joi';
-import moment from 'moment';
+
+const tripGetter = (trip) => {
+  const tripGetterFormat = jo.object().keys({
+    user_id: jo.string().required(),
+    is_admin: jo.boolean().valid('true', 'false').required(),
+  }).with('email', 'password');
+  return jo.validate(trip, tripGetterFormat);
+};
 
 const tripValidator = (trip) => {
   const tripFormat = {
@@ -15,4 +22,7 @@ const tripValidator = (trip) => {
   return jo.validate(trip, tripFormat);
 };
 
-export default tripValidator;
+export default {
+  tripValidator,
+  tripGetter,
+};
