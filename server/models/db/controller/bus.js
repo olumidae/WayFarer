@@ -10,33 +10,23 @@ const Bus = {
     const { error } = authenticateBus(req.body);
     if (error) return res.status(400).json({ status: 400, error: error.details[0].message });
 
-    const queryText = `INSERT INTO 
-    bus(id, number_plate, manufacturer, model, year, capacity)
+    const queryText = `INSERT INTO bus(id, number_plate, manufacturer, model, year, capacity)
     VALUES($1, $2, $3, $4, $5, $6)
     RETURNING *`;
-
     const id = uuid.v1();
     const { number_plate, manufacturer, model, year, capacity } = req.body;
     const values = [id, number_plate, manufacturer, model, year, capacity];
-
     const existingPlate = 'SELECT * FROM bus WHERE number_plate = $1';
     const { rows } = await pool.query(existingPlate, [number_plate]);
 
-    if (rows.length > 0) {
-      return res.status(400).json({ status: 'error', error: 'Number plate already exists' });
-    }
+    if (rows.length > 0) return res.status(400).json({ status: 'error', error: 'Number plate already exists' });
 
     try {
       const { rows: rowsInsert } = await pool.query(queryText, values);
       return res.status(200).json({
         status: 'success',
         data: {
-          id: rowsInsert[0].id,
-          number_plate: rowsInsert[0].number_plate,
-          manufacturer: rowsInsert[0].manufacturer,
-          model: rowsInsert[0].model,
-          year: rowsInsert[0].year,
-          capacity: rowsInsert[0].capacity,
+          rowsInsert,
         },
       });
     } catch (e) {
