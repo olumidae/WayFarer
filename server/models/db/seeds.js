@@ -4,10 +4,10 @@ const insertData = `
 INSERT INTO users (
   id, email, first_name, last_name, password, is_admin
 ) VALUES
-('2e0785a9-3611-491f-951c-62f2fe4c320a', 'olumideomitiran@gmail.com', 'Olumide', 'Omitiran', '$2b$10$DAUlN//SebBEPkWppjD1AeIRy6dWJ3k8DMv.T4hBSeZh/Lycb0Yki', true),
-('661b0c4b-1d4a-4e44-8b09-66e3554c045b', 'michaelsmith@gmail.com', 'Michael', 'Smith', '$2b$10$DAUlN//SebBEPkWppjD1AeIRy6dWJ3k8DMv.T4hBSeZh/Lycb0Yki', false),
-('7f5393a0-a5ad-4194-ab8d-b837b0d9e1c5', 'janesmith@jsmith.com', 'Jane', 'Smith', '$2b$10$DAUlN//SebBEPkWppjD1AeIRy6dWJ3k8DMv.T4hBSeZh/Lycb0Yki', false),
-('d56e5970-f169-453e-9646-939b15c3900a', 'jchinaman@mail.com', 'John', 'Chinaman', '$2b$10$DAUlN//SebBEPkWppjD1AeIRy6dWJ3k8DMv.T4hBSeZh/Lycb0Yki', false);
+('2e0785a9-3611-491f-951c-62f2fe4c320a', 'olumideomitiran@gmail.com', 'Olumide', 'Omitiran', '$2b$10$DAUlN//SebBEPkWppjD1AeIRy6dWJ3k8DMv.T4hBSeZh/Lycb0Yki', true, false),
+('661b0c4b-1d4a-4e44-8b09-66e3554c045b', 'michaelsmith@gmail.com', 'Michael', 'Smith', '$2b$10$DAUlN//SebBEPkWppjD1AeIRy6dWJ3k8DMv.T4hBSeZh/Lycb0Yki', false, false),
+('7f5393a0-a5ad-4194-ab8d-b837b0d9e1c5', 'janesmith@jsmith.com', 'Jane', 'Smith', '$2b$10$DAUlN//SebBEPkWppjD1AeIRy6dWJ3k8DMv.T4hBSeZh/Lycb0Yki', false, false),
+('d56e5970-f169-453e-9646-939b15c3900a', 'jchinaman@mail.com', 'John', 'Chinaman', '$2b$10$DAUlN//SebBEPkWppjD1AeIRy6dWJ3k8DMv.T4hBSeZh/Lycb0Yki', false, false);
 INSERT INTO bus (
   id, number_plate, manufacturer, model, year, capacity
 ) VALUES

@@ -3,18 +3,14 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import uuid from 'uuid';
 import pool from '../models/db/db';
-import authenticateUser from '../helpers/authenticateUser';
 
 
 dotenv.config();
-
 const { secret } = process.env;
 
 const User = {
   async signUpUser(req, res) {
-    const { error } = authenticateUser.signupValidator(req.body);
-    if (error) return res.status(400).json({ status: 400, error: error.details[0].message });
-
+    const existingEmail = 'SELECT * FROM users WHERE email = $1';
     const queryText = 'INSERT INTO users(id, first_name, last_name, email, password) VALUES($1, $2, $3, $4, $5) RETURNING *';
     const id = uuid.v4();
     // eslint-disable-next-line camelcase
@@ -22,14 +18,13 @@ const User = {
     const hashPassword = bcrypt.hashSync(password, 10);
     // eslint-disable-next-line camelcase
     const values = [id, first_name, last_name, email, hashPassword];
-    const existingEmail = 'SELECT * FROM users WHERE email = $1';
     const { rows } = await pool.query(existingEmail, [email]);
 
     if (rows.length > 0) return res.status(400).json({ status: 'error', error: 'User already exists' });
 
     try {
       const { rows: rowsInsert } = await pool.query(queryText, values);
-      const token = jwt.sign({ email }, secret, { expiresIn: '10h' });
+      const token = jwt.sign({ id, email }, secret, { expiresIn: '10h' });
       return res.status(201).json({
         status: 'success',
         data: {
@@ -44,28 +39,25 @@ const User = {
   },
 
   async logInUser(req, res) {
-    // Validating
-    const { error } = authenticateUser.UserLoginValidator(req.body);
-    if (error) return res.status(400).json({ status: 400, error: error.details[0].message });
-
-    const queryText = 'SELECT * FROM users WHERE email = $1';
     const { email, password } = req.body;
+    const queryText = 'SELECT * FROM users WHERE email = $1';
+    const { rows } = await pool.query(queryText, [email]);
+    // check if user exist in database
+    if (!rows[0].email) return res.status(401).json({ status: 'error', error: 'Email and/or password is incorrect' });
+    const comparePassword = bcrypt.compareSync(password, rows[0].password);
+    if (!comparePassword) return res.status(401).json({ status: 'error', error: 'Password incorrect' });
 
     try {
-      // Select all user record where email is equal to the email in the db
-      const { rows } = await pool.query(queryText, [email]);
-      // check if user exist in database
-      if (!rows[0].email) return res.status(401).json({ status: 'error', error: 'Email and/or password is incorrect' });
-
-      const comparePassword = bcrypt.compareSync(password, rows[0].password);
-      if (!comparePassword) return res.status(401).json({ status: 'error', error: 'Password incorrect' });
-
+      const updateText = 'UPDATE users SET is_loggedin = true WHERE email=$1 RETURNING *';
+      const { rows: rowsUpdate } = await pool.query(updateText, [email]);
       const token = jwt.sign({ id: rows[0].id, email }, secret);
+
       return res.status(200).json({
         status: 'success',
         data: {
-          user_id: rows[0].id,
-          is_admin: rows[0].is_admin,
+          user_id: rowsUpdate[0].id,
+          is_admin: rowsUpdate[0].is_admin,
+          is_loggedin: rowsUpdate[0].is_loggedin,
           token,
         },
       });

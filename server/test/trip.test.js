@@ -1,22 +1,55 @@
 import chai from 'chai';
 import chaiHttp from 'chai-http';
 import app from '../../app';
+import pool from '../models/db/db';
 
 const { expect } = chai;
 chai.use(chaiHttp);
+let token = '';
 
 describe('Create new trip', () => {
+  before( (done) => {
+    const queryText = 'DELETE FROM trip';
+    pool.query(queryText, () => {
+      const deleteText = 'DELETE FROM users';
+      pool.query(deleteText, () => {
+        const createAdmin = `INSERT INTO users (
+          id, email, first_name, last_name, password, is_admin, is_loggedin
+        ) VALUES
+        ('4447e3bc-b5a0-4624-bc92-d6be48c7c306', 'oomitiran@gmail.com', 'Olumide', 'Omitiran', '$2b$10$M7KDGr9g3tKfFWC0RpuXI.mZPlEkZarOSQTmhKIxh4GXVRb2OscrO', 'true', 'false')`;
+        pool.query(createAdmin, () => {
+          chai
+            .request(app)
+            .post('/api/v1/auth/signin')
+            .send({
+              email: 'oomitiran@gmail.com',
+              password: 'password@123',
+            }).end((err, res) => {
+              expect(res.status).to.equal(200);
+              token = res.body.data.token;
+              done();
+            });
+        }).catch(() => {
+          console.log('');
+        });
+      }).catch(() => {
+        console.log('');
+      });
+    }).catch(() => {
+      console.log('');
+    });
+  });
+
   it('lets Admin create new trip', (done) => {
     chai
       .request(app)
       .post('/api/v1/trips')
+      .set('token', token)
       .send({
-        user_id: 'a1804758-c0ab-471e-9c06-75f8031a7e75',
-        bus_id: '7876ecf0-9c74-11e9-a359-8921eecedef0',
-        is_admin: 'true',
+        bus_id: '17241280-a03d-11e9-8d34-91223ef6e4bf',
         origin: 'Lagos',
         destination: 'Warri',
-        trip_date: '2019-04-02',
+        trip_date: '2019-07-02',
         fare: 5000,
       })
       .end((err, res) => {
@@ -38,12 +71,11 @@ describe('Create new trip', () => {
       .request(app)
       .post('/api/v1/trips')
       .send({
-        user_id: '13a2122e-7247-458e-996b-8b9bd0df2929',
-        bus_id: '7876ecf0-9c74-11e9-a359-8921eecedef0',
+        bus_id: '17241280-a03d-11e9-8d34-91223ef6e4bf',
         is_admin: 'false',
-        origin: 'Lagos',
+        origin: 'Ibadan',
         destination: 'Warri',
-        trip_date: '2019-04-02',
+        trip_date: '2019-05-02',
         fare: 5000,
       }).end((err, res) => {
         expect(res.status).be.equal(400);
@@ -57,11 +89,13 @@ describe('Create new trip', () => {
     chai
       .request(app)
       .get('/api/v1/trips')
+      .set('token', token)
       .send({
-        user_id: 'a1804758-c0ab-471e-9c06-75f8031a7e75',
-        is_admin: 'true',
+        // user_id: '9682bbdb-b8d2-456f-bb88-7248ff10ad91',
+        // is_admin: 'true',
       })
       .end((err, res) => {
+        // console.log(res);
         expect(res.status).to.equal(200);
         expect(res.body).to.have.property('status');
         expect(res.body).to.have.property('data');
@@ -69,4 +103,5 @@ describe('Create new trip', () => {
         done();
       });
   });
+
 });

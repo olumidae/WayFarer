@@ -1,11 +1,21 @@
 import chai from 'chai';
 import chaiHttp from 'chai-http';
 import app from '../../app';
+import pool from '../models/db/db';
 
 const { expect } = chai;
 chai.use(chaiHttp);
 
 describe('Register new user', () => {
+  before( (done) => {
+    const deleteText = 'DELETE FROM users';
+    pool.query(deleteText, () => {
+      done();
+    }).catch(() => {
+      console.log('');
+    });
+  });
+
   it('Lets a new user register', (done) => {
     chai
       .request(app)

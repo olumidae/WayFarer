@@ -14,13 +14,9 @@ const Trip = {
     const createTrip = `INSERT INTO trip (id, bus_id, origin, destination, trip_date, fare) VALUES($1, $2, $3, $4, $5, $6)
     RETURNING *`;
     const id = uuid.v1();
-    const { is_admin, user_id, bus_id, origin, destination, trip_date, fare } = req.body;
+    const { bus_id, origin, destination, trip_date, fare } = req.body;
     const formatted_date = moment(trip_date).format('lll');
     const values = [id, bus_id, origin, destination, formatted_date, fare];
-    const selectText = 'SELECT * FROM users where id = $1';
-    const { rows } = await pool.query(selectText, [user_id]);
-
-    if (rows[0].is_admin === false) return res.status(400).json({ status: 'error', error: 'Only admin can create trips' });
 
     try {
       const { rows: rowsInsert } = await pool.query(createTrip, values);
