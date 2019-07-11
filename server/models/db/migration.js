@@ -7,7 +7,8 @@ const createTables = `DROP TABLE IF EXISTS users CASCADE;
     first_name VARCHAR(128),
     last_name VARCHAR(128),
     password VARCHAR NOT NULL,
-    is_admin BOOLEAN NOT NULL DEFAULT false
+    is_admin BOOLEAN NOT NULL DEFAULT false,
+    is_loggedin BOOLEAN NOT NULL DEFAULT false
   );
   DROP TABLE IF EXISTS bus CASCADE;
   CREATE TABLE bus(

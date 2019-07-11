@@ -1,17 +1,19 @@
 import express from 'express';
 import User from '../controllers/userController';
+import { registerValidator, loginValidator, tokenValidator } from '../middlewares/auth';
 import Bus from '../controllers/busController';
 import Trip from '../controllers/tripController';
 
+
 const router = express.Router();
 
-router.post('/auth/signup', User.signUpUser);
+router.post('/auth/signup', registerValidator, User.signUpUser);
 
-router.post('/auth/signin', User.logInUser);
+router.post('/auth/signin', loginValidator, User.logInUser);
 
 router.post('/bus', Bus.createBus);
 
-router.post('/trips', Trip.createTrip);
-router.get('/trips', Trip.getAllTrips);
+router.post('/trips', tokenValidator.validateAdminToken, Trip.createTrip);
+router.get('/trips', tokenValidator.validateToken, Trip.getAllTrips);
 
 export default router;
