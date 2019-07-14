@@ -7,8 +7,8 @@ const { expect } = chai;
 chai.use(chaiHttp);
 
 describe('Register new user', () => {
-  before( (done) => {
-    const deleteText = 'DELETE FROM users';
+  before((done) => {
+    const deleteText = 'DELETE FROM users WHERE first_name=test';
     pool.query(deleteText, () => {
       done();
     }).catch(() => {

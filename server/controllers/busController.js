@@ -18,7 +18,7 @@ const Bus = {
     const existingPlate = 'SELECT * FROM bus WHERE number_plate = $1';
     const { rows } = await pool.query(existingPlate, [number_plate]);
 
-    if (rows.length > 0) return res.status(400).json({ status: 'error', error: 'Number plate already exists' });
+    if (rows.length > 0) return res.status(409).json({ status: 'error', error: 'Number plate already exists' });
 
     try {
       const { rows: rowsInsert } = await pool.query(queryText, values);

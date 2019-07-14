@@ -9,7 +9,7 @@ let token = '';
 
 describe('Create new trip', () => {
   before( (done) => {
-    const queryText = 'DELETE FROM trip';
+    const queryText = 'DELETE FROM trip WHERE destination=Warri';
     pool.query(queryText, () => {
       const deleteText = 'DELETE FROM users';
       pool.query(deleteText, () => {
@@ -78,7 +78,7 @@ describe('Create new trip', () => {
         trip_date: '2019-05-02',
         fare: 5000,
       }).end((err, res) => {
-        expect(res.status).be.equal(400);
+        expect(res.status).be.equal(403);
         expect(res.body).to.have.property('status');
         expect(res.body).to.have.property('error');
         done();
