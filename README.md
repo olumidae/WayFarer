@@ -1,4 +1,7 @@
 # WayFarer
+[![Build Status](https://travis-ci.org/olumidae/WayFarer.svg?branch=develop)](https://travis-ci.org/olumidae/WayFarer)
+<a href="https://codeclimate.com/github/olumidae/WayFarer/maintainability"><img src="https://api.codeclimate.com/v1/badges/1f5dfb7d10c5874605e3/maintainability" /></a>
+
 WayFarer is a public bus transportation booking server
 
 # Pivotal Tracker
