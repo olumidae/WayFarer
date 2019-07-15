@@ -11,7 +11,7 @@ router.post('/auth/signup', registerValidator, User.signUpUser);
 
 router.post('/auth/signin', loginValidator, User.logInUser);
 
-router.post('/bus', Bus.createBus);
+router.post('/bus', tokenValidator.validateAdminToken, Bus.createBus);
 
 router.post('/trips', tokenValidator.validateAdminToken, Trip.createTrip);
 router.get('/trips', tokenValidator.validateToken, Trip.getAllTrips);

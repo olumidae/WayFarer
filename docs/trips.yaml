@@ -1,0 +1,80 @@
+paths:
+  /trips:
+    post:
+      tags:
+        - admin
+      security:
+      - Bearer: []
+      summary: It creates a trip
+      description: Admin can create a trip
+      produces:
+      - application/json
+      consumes:
+      - application/json
+      parameters:
+      - name: body
+        in: body
+        description: Trip object
+        required: true
+        schema:
+          $ref: '#/definitions/CreateTripReq'
+      responses:
+        200:
+          description: Trip successfully created
+          schema:
+            $ref: '#/definitions/CreateTripRes'
+        401:
+          description: User is forbidden from accessing admin area
+          schema:
+            $ref: '#/definitions/errorDef'
+        404:
+          description: Bus id provided for the trip does not exist
+          schema:
+            $ref: '#/definitions/errorDef'
+        409:
+          description: Bus is currently assigned to an active trip
+          schema:
+            $ref: '#/definitions/errorDef'
+        500:
+          description: Server error
+          schema:
+            $ref: '#/definitions/errorDef'
+    get:
+      tags:
+        - user
+      security:
+      - Bearer: []
+      summary: It gets all trips
+      description: Users and admin can view all trips
+      produces:
+      - application/json
+      consumes:
+      - application/json
+      parameters:
+      - name: origin
+        in: query 
+        description: origin to filter
+        required: false
+        type: string
+      - name: destination
+        in: query 
+        description: destination to filter
+        required: false
+        type: string
+      responses:
+        200:
+          description: Trip successfully fetched
+          schema:
+            $ref: '#/definitions/GetTripsRes'
+        400:
+          description: Bad query parameters (origin or destination)
+          schema:
+            $ref: '#/definitions/errorDef'
+        403:
+          description: User is forbidden from accessing admin area
+          schema:
+            $ref: '#/definitions/errorDef'
+        500:
+          description: Server error
+          schema:
+            $ref: '#/definitions/errorDef'
