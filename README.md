@@ -57,9 +57,9 @@ To run unit tests run the command : **npm** test in the command line terminal
 
 <tr><td>GET</td> <td>/api/v1/trips</td>  <td>View all trips</td></tr>
 
-<tr><td>GET</td> <td>/api/v1/trips?filter_by=origin</td>  <td>View trips by origin</td></tr>
+<!-- <tr><td>GET</td> <td>/api/v1/trips?filter_by=origin</td>  <td>View trips by origin</td></tr> -->
 
-<tr><td>GET</td> <td>/api/v1/trips?filter_by=destination</td>  <td>View trips by destination</td></tr>
+<!-- <tr><td>GET</td> <td>/api/v1/trips?filter_by=destination</td>  <td>View trips by destination</td></tr> -->
 
 <tr><td>GET</td> <td>/api/v1/bookings</td>  <td>View all bookings</td></tr>
 
@@ -69,7 +69,7 @@ To run unit tests run the command : **npm** test in the command line terminal
 
 </table>
 
-Install Postman and navigate localhost: 6000/api/v1/ to test API endpoints
+Install Postman and navigate localhost: 7000/api/v1/ to test API endpoints
 
 ## Features
 
@@ -78,8 +78,6 @@ Install Postman and navigate localhost: 6000/api/v1/ to test API endpoints
 * Users can login
 * Users can book a seat on a trip.
 * Users can delete their booking.
-* Users can get a list of filtered trips based on origin.
-* Users can get a list of filtered trips based on destination.
 * Users can specify their seat numbers when making a booking.
 
 ### Admin

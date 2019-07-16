@@ -6,8 +6,9 @@ import pool from '../models/db/db';
 const { expect } = chai;
 chai.use(chaiHttp);
 let token = '';
-var userToken = '';
+let userToken = '';
 const firstname = 'test';
+
 describe('Register new user', () => {
   before((done) => {
     const deleteText = `DELETE FROM users WHERE first_name=${firstname}`;
@@ -94,9 +95,7 @@ describe('Register new user', () => {
         done();
       });
   });
-});
 
-describe('Login', () => {
   it('Lets new and existing users login', (done) => {
     chai.request(app)
       .post('/api/v1/auth/signin')
@@ -131,7 +130,6 @@ describe('Login', () => {
         done();
       });
   });
-
 
   it('Incorrect Password', (done) => {
     chai.request(app)
@@ -250,7 +248,6 @@ describe('Create new trip', () => {
   });
 });
 
-
 describe('Users Booking Trips', () => {
   it('post booking success', (done) => {
     const user = {
@@ -262,7 +259,6 @@ describe('Users Booking Trips', () => {
       .send(user)
       .set('token', userToken)
       .end((err, res) => {
-        console.log(res.body);
         expect(res.status).to.be.equal(201);
         expect(res.body).be.an('object');
         expect(res.body.status).be.a('string');
@@ -285,6 +281,64 @@ describe('Users Booking Trips', () => {
         expect(res.body).to.have.property('status');
         expect(res.body).to.have.property('error');
         expect(res.body).to.be.an('object');
+        done();
+      });
+  });
+});
+
+describe('User Get trips', () => {
+  it('Get User bookings', (done) => {
+    const user = {
+      trip_id: '1',
+      seat_number: '5',
+    };
+    chai.request(app)
+      .get('/api/v1/bookings')
+      .send(user)
+      .set('token', userToken)
+      .end((err, res) => {
+        console.log(res.body);
+        console.log(userToken);
+        expect(res.status).to.be.equal(200);
+        expect(res.body).be.an('object');
+        expect(res.body.status).be.a('string');
+        expect(res.body.data).be.an('array');
+        done();
+      });
+  });
+
+  it('Requires Token To Get bookings', (done) => {
+    const user = {
+      trip_id: '1',
+      seat_number: '5',
+    };
+    chai.request(app)
+      .get('/api/v1/bookings')
+      .send(user)
+      .end((err, res) => {
+        expect(res.status).to.be.equal(400);
+        expect(res.body).to.have.property('status');
+        expect(res.body).to.have.property('error');
+        done();
+      });
+  });
+
+  it('Get Admin bookings', (done) => {
+    const user = {
+      trip_id: '4',
+      seat_number: '2',
+    };
+    chai.request(app)
+      .get('/api/v1/bookings')
+      .send(user)
+      .set('token', token)
+      .end((err, res) => {
+        console.log('>>>>>>> admin body :', res.body);
+        console.log(token);
+        expect(res.status).to.be.equal(200);
+        expect(res.body).be.an('object');
+        expect(res.body.status).be.a('string');
+        expect(res.body.data).be.an('array');
         done();
       });
   });
