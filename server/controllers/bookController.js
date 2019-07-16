@@ -60,6 +60,57 @@ const book = {
     }
   },
 
+  async getbookings(req, res) {
+    try {
+      const { is_admin, id } = req.user;
+      if (is_admin === Boolean(true)) {
+        const checkBookings = {
+          text: `SELECT 
+        booking.id AS booking_id,booking.user_id, booking.seat_number, booking.trip_id, 
+        trip.bus_id, trip.origin, trip.destination, trip.trip_date, trip.status,
+        users.first_name, users.last_name, users.email
+        FROM booking JOIN trip ON (booking.trip_id = trip.id) JOIN users ON (booking.user_id = users.id)`,
+        };
+        const { rows } = await pool.query(checkBookings);
+        console.log(rows[0]);
+        if (!rows[0]) {
+          return res.status(404).json({
+            status: 404,
+            error: 'No booking found',
+          });
+        }
+        return res.status(200).json({
+          status: 'success',
+          data: rows,
+        });
+      }
+      const checkBookings = {
+        text: `SELECT 
+      booking.id AS booking_id,booking.user_id, booking.seat_number, booking.trip_id, 
+      trip.bus_id, trip.origin, trip.destination, trip.trip_date, trip.status,
+      users.first_name, users.last_name, users.email
+      FROM booking JOIN trip ON (booking.trip_id = trip.id) JOIN users ON (booking.user_id = users.id) WHERE user_id = $1`,
+        values: [id],
+      };
+      const { rows } = await pool.query(checkBookings);
+      if (!rows[0]) {
+        return res.status(404).json({
+          status: 404,
+          error: 'No booking found',
+        });
+      }
+      return res.status(200).json({
+        status: 'success',
+        data: rows,
+      });
+    } catch (error) {
+      return res.status(500).json({
+        status: 500,
+        error: `Internal server error ${error.message}`,
+      });
+    }
+  },
+
 };
 
 export default book;

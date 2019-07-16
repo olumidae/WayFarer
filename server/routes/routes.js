@@ -18,5 +18,6 @@ router.post('/trips', tokenValidator.validateAdminToken, Trip.createTrip);
 router.get('/trips', tokenValidator.validateToken, Trip.getAllTrips);
 
 router.post('/bookings', tokenValidator.validateToken, booktripValidate, Book.makeBooking);
+router.get('/bookings', tokenValidator.validateToken, booktripValidate, Book.getbookings);
 
 export default router;
