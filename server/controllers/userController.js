@@ -1,7 +1,6 @@
 import dotenv from 'dotenv';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import uuid from 'uuid';
 import pool from '../models/db/db';
 
 
@@ -11,13 +10,13 @@ const { secret } = process.env;
 const User = {
   async signUpUser(req, res) {
     const existingEmail = 'SELECT * FROM users WHERE email = $1';
-    const queryText = 'INSERT INTO users(id, first_name, last_name, email, password) VALUES($1, $2, $3, $4, $5) RETURNING *';
-    const id = uuid.v4();
+    const queryText = 'INSERT INTO users(first_name, last_name, email, password) VALUES($1, $2, $3, $4) RETURNING *';
+
     // eslint-disable-next-line camelcase
-    const { first_name, last_name, email, password } = req.body;
+    const { id, first_name, last_name, email, password } = req.body;
     const hashPassword = bcrypt.hashSync(password, 10);
     // eslint-disable-next-line camelcase
-    const values = [id, first_name, last_name, email, hashPassword];
+    const values = [first_name, last_name, email, hashPassword];
     const { rows } = await pool.query(existingEmail, [email]);
 
     if (rows.length > 0) return res.status(400).json({ status: 'error', error: 'User already exists' });
@@ -50,7 +49,7 @@ const User = {
     try {
       const updateText = 'UPDATE users SET is_loggedin = true WHERE email=$1 RETURNING *';
       const { rows: rowsUpdate } = await pool.query(updateText, [email]);
-      const token = jwt.sign({ id: rows[0].id, email }, secret);
+      const token = jwt.sign({ id: rows[0].id, email }, secret, { expiresIn: '10h' });
 
       return res.status(200).json({
         status: 'success',

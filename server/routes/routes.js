@@ -1,8 +1,9 @@
 import express from 'express';
 import User from '../controllers/userController';
-import { registerValidator, loginValidator, tokenValidator } from '../middlewares/auth';
+import { registerValidator, loginValidator, tokenValidator, booktripValidate } from '../middlewares/auth';
 import Bus from '../controllers/busController';
 import Trip from '../controllers/tripController';
+import Book from '../controllers/bookController';
 
 
 const router = express.Router();
@@ -15,5 +16,7 @@ router.post('/bus', tokenValidator.validateAdminToken, Bus.createBus);
 
 router.post('/trips', tokenValidator.validateAdminToken, Trip.createTrip);
 router.get('/trips', tokenValidator.validateToken, Trip.getAllTrips);
+
+router.post('/bookings', tokenValidator.validateToken, booktripValidate, Book.makeBooking);
 
 export default router;

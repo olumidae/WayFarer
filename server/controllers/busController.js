@@ -1,5 +1,4 @@
 /* eslint-disable camelcase */
-import uuid from 'uuid';
 import pool from '../models/db/db';
 import authenticateBus from '../helpers/authenticateBus';
 
@@ -10,11 +9,11 @@ const Bus = {
     const { error } = authenticateBus(req.body);
     if (error) return res.status(400).json({ status: 400, error: error.details[0].message });
 
-    const queryText = `INSERT INTO bus(id, number_plate, manufacturer, model, year, capacity) VALUES($1, $2, $3, $4, $5, $6)
+    const queryText = `INSERT INTO bus(number_plate, manufacturer, model, year, capacity) VALUES($1, $2, $3, $4, $5)
     RETURNING *`;
-    const id = uuid.v1();
+
     const { number_plate, manufacturer, model, year, capacity } = req.body;
-    const values = [id, number_plate, manufacturer, model, year, capacity];
+    const values = [number_plate, manufacturer, model, year, capacity];
     const existingPlate = 'SELECT * FROM bus WHERE number_plate = $1';
     const { rows } = await pool.query(existingPlate, [number_plate]);
 

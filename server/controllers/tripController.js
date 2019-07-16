@@ -1,6 +1,5 @@
 /* eslint-disable indent */
 /* eslint-disable camelcase */
-import uuid from 'uuid';
 import moment from 'moment';
 import pool from '../models/db/db';
 import authenticateTrip from '../helpers/authenticateTrip';
@@ -11,12 +10,11 @@ const Trip = {
     const { error } = authenticateTrip.tripValidator(req.body);
     if (error) return res.status(400).json({ status: 400, error: error.details[0].message });
 
-    const createTrip = `INSERT INTO trip (id, bus_id, origin, destination, trip_date, fare) VALUES($1, $2, $3, $4, $5, $6)
+    const createTrip = `INSERT INTO trip ( bus_id, origin, destination, trip_date, fare) VALUES($1, $2, $3, $4, $5)
     RETURNING *`;
-    const id = uuid.v1();
     const { bus_id, origin, destination, trip_date, fare } = req.body;
     const formatted_date = moment(trip_date).format('lll');
-    const values = [id, bus_id, origin, destination, formatted_date, fare];
+    const values = [bus_id, origin, destination, formatted_date, fare];
 
     try {
       const { rows: rowsInsert } = await pool.query(createTrip, values);
