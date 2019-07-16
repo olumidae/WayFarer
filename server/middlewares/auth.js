@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import bcrypt from 'bcrypt';
 import authenticateUser from '../helpers/authenticateUser';
 import authenticateTrip from '../helpers/authenticateTrip';
+import authenticateBook from '../helpers/authenticateBooking';
 import pool from '../models/db/db';
 
 
@@ -56,7 +57,6 @@ export const tokenValidator = {
 
         if (rows[0] && rows[0].is_admin) {
           req.user = rows[0];
-
           req.decoded = decoded;
           return next();
         }
@@ -94,6 +94,12 @@ export const loginValidator = (req, res, next) => {
 
 export const validateTrip = (req, res, next) => {
   const { error } = authenticateTrip.tripValidator(req.body);
+  if (error) return res.status(400).json({ status: 400, error: error.details[0].message });
+  return next();
+};
+
+export const booktripValidate = (req, res, next) => {
+  const { error } = authenticateBook(req.body);
   if (error) return res.status(400).json({ status: 400, error: error.details[0].message });
   return next();
 };
