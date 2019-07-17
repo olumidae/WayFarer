@@ -1,8 +1,7 @@
 /* eslint-disable camelcase */
 import pool from '../models/db/db';
 
-const book = {
-
+const Book = {
   async makeBooking(req, res) {
     try {
       const { email, id } = req.user;
@@ -45,6 +44,7 @@ const book = {
       return res.status(201).json({
         status: 'success',
         data: {
+          id: booking[0].id,
           user_id: rows[0].user_id,
           trip_id: trip[0].id,
           bus_id: trip[0].bus_id,
@@ -72,7 +72,6 @@ const book = {
         FROM booking JOIN trip ON (booking.trip_id = trip.id) JOIN users ON (booking.user_id = users.id)`,
         };
         const { rows } = await pool.query(checkBookings);
-        console.log(rows[0]);
         if (!rows[0]) {
           return res.status(404).json({
             status: 404,
@@ -111,6 +110,74 @@ const book = {
     }
   },
 
+  async deleteBooking(req, res) {
+    try {
+      const { bookingId } = req.params;
+
+      const { id } = req.user;
+      const checkBooking = {
+        text: 'SELECT * FROM booking where id = $1 AND user_id = $2',
+        values: [bookingId, id],
+      };
+      const { rows } = await pool.query(checkBooking);
+      if (!rows[0]) {
+        return res.status(404).json({
+          status: 404,
+          error: 'No booking found',
+        });
+      }
+      const deleteBooking = {
+        text: 'DELETE FROM booking WHERE id = $1 AND user_id = $2',
+        values: [bookingId, id],
+      };
+      await pool.query(deleteBooking);
+      return res.status(200).json({
+        status: 'success',
+        data: {
+          message: 'booking successfully deleted',
+        },
+      });
+    } catch (error) {
+      return res.status(500).json({
+        status: 500,
+        error: `Internal server error ${error.message}`,
+      });
+    }
+  },
+
+  async cancelTrip(req, res) {
+    try {
+      const { tripId } = req.params;
+      const checkTrip = {
+        text: 'SELECT * FROM trips WHERE id = $1 and status = $2',
+        values: [tripId, 'active'],
+      };
+      const { rows } = await pool.query(checkTrip);
+      if (!rows[0]) {
+        return res.status(400).json({
+          status: 400,
+          error: 'Not an active trip',
+        });
+      }
+      const updateTrip = {
+        text: "UPDATE trips SET status = 'cancelled' WHERE id = $1",
+        values: [tripId],
+      };
+      await pool.query(updateTrip);
+      return res.status(200).json({
+        status: 'success',
+        data: {
+          message: 'Trip cancelled successfully',
+        },
+      });
+    } catch (error) {
+      return res.status(500).json({
+        status: 500,
+        error: `Internal server error ${error.message}`,
+      });
+    }
+  },
+
 };
 
-export default book;
+export default Book;

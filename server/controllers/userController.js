@@ -19,11 +19,11 @@ const User = {
     const values = [first_name, last_name, email, hashPassword];
     const { rows } = await pool.query(existingEmail, [email]);
 
-    if (rows.length > 0) return res.status(400).json({ status: 'error', error: 'User already exists' });
+    if (rows[0]) return res.status(400).json({ status: 'error', error: 'User already exists' });
 
     try {
       const { rows: rowsInsert } = await pool.query(queryText, values);
-      const token = jwt.sign({ id, email }, secret, { expiresIn: '10h' });
+      const token = jwt.sign({ id, email }, secret, { expiresIn: '1024hrs' });
       return res.status(201).json({
         status: 'success',
         data: {
@@ -49,7 +49,7 @@ const User = {
     try {
       const updateText = 'UPDATE users SET is_loggedin = true WHERE email=$1 RETURNING *';
       const { rows: rowsUpdate } = await pool.query(updateText, [email]);
-      const token = jwt.sign({ id: rows[0].id, email }, secret, { expiresIn: '10h' });
+      const token = jwt.sign({ id: rows[0].id, email }, secret, { expiresIn: '1024hrs' });
 
       return res.status(200).json({
         status: 'success',

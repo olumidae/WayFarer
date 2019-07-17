@@ -26,8 +26,8 @@ async function queryUser(decoded) {
   return rows;
 }
 
-export const tokenValidator = {
 
+export const tokenValidator = {
   async validateToken(req, res, next) {
     const { token } = req.headers;
     if (token) {
@@ -44,11 +44,12 @@ export const tokenValidator = {
         return res.status(401).json({ status: 'error', error: 'Not a valid user' });
       });
     } else {
-      return res.status(400).json({ status: 'error', error: 'token not valid' });
+      return res.status(400).json({ status: 'error', error: 'token not provided' });
     }
+
   },
 
-  async validateAdminToken (req, res, next) {
+  async validateAdminToken(req, res, next) {
     const { token } = req.headers;
     if (token) {
       jwt.verify(token, secret, async (err, decoded) => {
@@ -68,6 +69,31 @@ export const tokenValidator = {
   },
 };
 
+export const verifyUser = (req, res, next) => {
+  const { token } = req.headers;
+  if (!token) {
+    return res.status(401).json({
+      status: 401,
+      error: 'No token provided.',
+    });
+  }
+  jwt.verify(token, process.env.SECRET_KEY, (err, decoded) => {
+    if (err) {
+      return res.status(500).json({
+        status: 500,
+        error: 'Failed to Authenticate token',
+      });
+    }   
+    req.user = decoded;
+  });
+  if (req.user.is_admin === Boolean(true)) {
+    return res.status(401).json({
+      status: 401,
+      error: 'Not authorized to perform this operation',
+    });
+  }
+  return next();
+};
 
 export const generateToken = ({ id, email }) => {
   jwt.sign({ id, email }, secretKey,
@@ -99,7 +125,13 @@ export const validateTrip = (req, res, next) => {
 };
 
 export const booktripValidate = (req, res, next) => {
-  const { error } = authenticateBook(req.body);
+  const { error } = authenticateBook.bookingValidator(req.body);
+  if (error) return res.status(400).json({ status: 400, error: error.details[0].message });
+  return next();
+};
+
+export const deletebooktripValidate = (req, res, next) => {
+  const { error } = authenticateBook.deletebookingValidator(req.body);
   if (error) return res.status(400).json({ status: 400, error: error.details[0].message });
   return next();
 };

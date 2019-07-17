@@ -4,10 +4,10 @@ const insertData = `
 INSERT INTO users (
   id, email, first_name, last_name, password, is_admin
 ) VALUES
-('1', 'olumideomitiran@gmail.com', 'Olumide', 'Omitiran', '$2b$10$M7KDGr9g3tKfFWC0RpuXI.mZPlEkZarOSQTmhKIxh4GXVRb2OscrO', true, false),
-('2', 'michaelsmith@gmail.com', 'Michael', 'Smith', '$2b$10$M7KDGr9g3tKfFWC0RpuXI.mZPlEkZarOSQTmhKIxh4GXVRb2OscrO', false, false),
-('3', 'janesmith@jsmith.com', 'Jane', 'Smith', '$2b$10$M7KDGr9g3tKfFWC0RpuXI.mZPlEkZarOSQTmhKIxh4GXVRb2OscrO', false, false),
-('4', 'jchinaman@mail.com', 'John', 'Chinaman', '$2b$10$M7KDGr9g3tKfFWC0RpuXI.mZPlEkZarOSQTmhKIxh4GXVRb2OscrO', false, false);
+('1', 'olumideomitiran@gmail.com', 'Olumide', 'Omitiran', '$2b$10$M7KDGr9g3tKfFWC0RpuXI.mZPlEkZarOSQTmhKIxh4GXVRb2OscrO', 'true'),
+('2', 'michaelsmith@gmail.com', 'Michael', 'Smith', '$2b$10$M7KDGr9g3tKfFWC0RpuXI.mZPlEkZarOSQTmhKIxh4GXVRb2OscrO', 'false'),
+('3', 'janesmith@jsmith.com', 'Jane', 'Smith', '$2b$10$M7KDGr9g3tKfFWC0RpuXI.mZPlEkZarOSQTmhKIxh4GXVRb2OscrO', 'false'),
+('4', 'jchinaman@mail.com', 'John', 'Chinaman', '$2b$10$M7KDGr9g3tKfFWC0RpuXI.mZPlEkZarOSQTmhKIxh4GXVRb2OscrO', 'false');
 INSERT INTO bus (
   id, number_plate, manufacturer, model, year, capacity
 ) VALUES
@@ -27,8 +27,8 @@ INSERT INTO booking (
 ('2', '4', '2', 8),
 ('3', '1', '3', 13),
 ('4', '2', '1', 7),
-('5', '2', '2', 28),
-('6', '3', '4', 22),
+('5', '2', '2', 18),
+('6', '3', '4', 12),
 ('7', '3', '3', 1);
 `;
 

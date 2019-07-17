@@ -3,3 +3,4 @@ node_modules
 .env
 .coveralls
 .nyc_output
+coverage
