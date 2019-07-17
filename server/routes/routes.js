@@ -4,7 +4,6 @@ import { registerValidator, loginValidator, tokenValidator, booktripValidate } f
 import Bus from '../controllers/busController';
 import Trip from '../controllers/tripController';
 import Book from '../controllers/bookController';
-import pool from '../models/db/db';
 
 
 const router = express.Router();
@@ -15,8 +14,8 @@ router.post('/bus', tokenValidator.validateAdminToken, Bus.createBus);
 router.post('/trips', tokenValidator.validateAdminToken, Trip.createTrip);
 router.get('/trips', tokenValidator.validateToken, Trip.getAllTrips);
 router.post('/bookings', tokenValidator.validateToken, booktripValidate, Book.makeBooking);
-router.get('/bookings', tokenValidator.validateToken, booktripValidate, Book.getbookings);
+router.get('/bookings', tokenValidator.validateToken, Book.getbookings);
 router.delete('/bookings/:bookingId', tokenValidator.validateToken, Book.deleteBooking);
-
+router.patch('/trips/:tripId', tokenValidator.validateAdminToken, Trip.cancelTrip);
 
 export default router;

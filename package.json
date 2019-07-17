@@ -4,7 +4,7 @@
   "description": "WayFarer is a public bus transportation booking server",
   "main": "app.js",
   "scripts": {
-    "test": "nyc --exec babel-node mocha ./server/test/**/*.test.js --exit",
+    "test": "nyc --exec babel-node mocha ./server/test/**/*.test.js --exit --timeout 20000",
     "start": "nodemon --exec babel-node app.js",
     "setup-db": "babel-node ./server/models/db/migration.js",
     "seed-db": "babel-node ./server/models/db/seeds.js",

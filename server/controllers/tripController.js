@@ -16,7 +16,7 @@ const Trip = {
     const formatted_date = moment(trip_date).format('lll');
     const values = [bus_id, origin, destination, formatted_date, fare];
     const checkbus = {
-      text: 'SELECT * FROM buses WHERE id = $1',
+      text: 'SELECT * FROM bus WHERE id = $1',
       values: [bus_id],
     };
     const { rows } = await pool.query(checkbus);
@@ -44,7 +44,6 @@ const Trip = {
       return res.status(500).json({ status: 'error', error: 'Internal server error' });
     }
   },
-
 
   async getAllTrips(req, res) {
     const { error } = authenticateTrip.tripGetter(req.body);
@@ -105,6 +104,41 @@ const Trip = {
       });
     }
   },
+
+  async cancelTrip(req, res) {
+    try {
+      const { tripId } = req.params;
+      console.log(tripId);
+      const checkTrip = {
+        text: 'SELECT * FROM trip WHERE id = $1 and status = $2',
+        values: [tripId, 'active'],
+      };
+      const { rows } = await pool.query(checkTrip);
+      if (!rows[0]) {
+        return res.status(400).json({
+          status: 400,
+          error: 'Not an active trip',
+        });
+      }
+      const updateTrip = {
+        text: "UPDATE trip SET status = 'cancelled' WHERE id = $1",
+        values: [tripId],
+      };
+      await pool.query(updateTrip);
+      return res.status(200).json({
+        status: 'success',
+        data: {
+          message: 'Trip cancelled successfully',
+        },
+      });
+    } catch (error) {
+      return res.status(500).json({
+        status: 500,
+        error: `Internal server error ${error.message}`,
+      });
+    }
+  },
+
 };
 
 
