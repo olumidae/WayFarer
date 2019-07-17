@@ -10,4 +10,5 @@ const bookingValidator = (book) => {
   return jo.validate(book, bookingFormat);
 };
 
-export default bookingValidator;
+
+export default { bookingValidator }

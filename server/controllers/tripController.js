@@ -15,7 +15,17 @@ const Trip = {
     const { bus_id, origin, destination, trip_date, fare } = req.body;
     const formatted_date = moment(trip_date).format('lll');
     const values = [bus_id, origin, destination, formatted_date, fare];
-
+    const checkbus = {
+      text: 'SELECT * FROM buses WHERE id = $1',
+      values: [bus_id],
+    };
+    const { rows } = await pool.query(checkbus);
+    if (!rows[0]) {
+      return res.status(404).json({
+        status: 404,
+        error: 'Not an available bus',
+      });
+    }
     try {
       const { rows: rowsInsert } = await pool.query(createTrip, values);
       return res.status(200).json({
@@ -40,17 +50,59 @@ const Trip = {
     const { error } = authenticateTrip.tripGetter(req.body);
     if (error) return res.status(400).json({ status: 400, error: error.details[0].message });
 
-    const getTrip = 'SELECT * FROM trip';
     try {
-      const { rows } = await pool.query(getTrip);
+      const { origin, destination } = req.query;
+      if (origin) {
+        const getOrigin = {
+          text: 'SELECT * FROM trip WHERE origin = $1',
+          values: [origin],
+        };
+        const { rows: orijin } = await db.query(getOrigin);
+        if (!orijin[0]) {
+          return res.status(404).json({
+            status: 404,
+            error: 'No available trip',
+          });
+        }
+        return res.status(200).json({
+          status: 'success',
+          data: orijin,
+        });
+      }
+      if (destination) {
+        const getDestination = {
+          text: 'SELECT * FROM trip WHERE destination = $1',
+          values: [destination],
+        };
+        const { rows: destine } = await pool.query(getDestination);
+        if (!destine[0]) {
+          return res.status(404).json({
+            status: 404,
+            error: 'No available trip',
+          });
+        }
+        return res.status(200).json({
+          status: 'success',
+          data: destine,
+        });
+      }
+      const getTrips = { text: 'SELECT * FROM trip' };
+      const { rows } = await pool.query(getTrips);
+      if (!rows[0]) {
+        return res.status(404).json({
+          status: 404,
+          error: 'No available trip',
+        });
+      }
       return res.status(200).json({
         status: 'success',
-        data: {
-          rows,
-        },
+        data: rows,
       });
     } catch (e) {
-      return res.status(500).json({ status: 'error', error: 'Internal server error' });
+      return res.status(500).json({
+        status: 500,
+        error: `Internal server error ${error.message}`,
+      });
     }
   },
 };

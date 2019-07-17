@@ -7,6 +7,8 @@ const { expect } = chai;
 chai.use(chaiHttp);
 let token = '';
 let userToken = '';
+let admintoken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJvb21pdGlyYW5AZ21haWwuY29tIiwiaWF0IjoxNTYzMzY4MTczLCJleHAiOjE1NjcwNTQ1NzN9.IYf7ecqShTslEjj4Uqg_VWumSSUAwWK2oYojwOHauto';
+let usertoken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZW1haWwiOiJtaWNoYWVsc21pdGhAZ21haWwuY29tIiwiaWF0IjoxNTYzMzY4MDYzLCJleHAiOjE1NjcwNTQ0NjN9.6byX8D91rqYiXBOoVMlkEe60_bIA_bRnDmxiNF0xkIc';
 const firstname = 'test';
 
 describe('Register new user', () => {
@@ -186,7 +188,7 @@ describe('Create new trip', () => {
     chai
       .request(app)
       .post('/api/v1/trips')
-      .set('token', token)
+      .set('token', admintoken)
       .send({
         bus_id: '1',
         origin: 'Lagos',
@@ -233,7 +235,7 @@ describe('Create new trip', () => {
     chai
       .request(app)
       .get('/api/v1/trips')
-      .set('token', token)
+      .set('token', usertoken)
       .send({
         // user_id: '1',
         // is_admin: 'true',
@@ -249,15 +251,15 @@ describe('Create new trip', () => {
 });
 
 describe('Users Booking Trips', () => {
-  it('post booking success', (done) => {
+  it('Create booked trip', (done) => {
     const user = {
       trip_id: '4',
-      seat_number: '3',
+      seat_number: '4',
     };
     chai.request(app)
       .post('/api/v1/bookings')
       .send(user)
-      .set('token', userToken)
+      .set('token', usertoken)
       .end((err, res) => {
         expect(res.status).to.be.equal(201);
         expect(res.body).be.an('object');
@@ -275,7 +277,7 @@ describe('Users Booking Trips', () => {
     chai.request(app)
       .post('/api/v1/bookings')
       .send(user)
-      .set('token', userToken)
+      .set('token', usertoken)
       .end((err, res) => {
         expect(res.body.status).to.equal(409);
         expect(res.body).to.have.property('status');
@@ -295,10 +297,8 @@ describe('User Get trips', () => {
     chai.request(app)
       .get('/api/v1/bookings')
       .send(user)
-      .set('token', userToken)
+      .set('token', usertoken)
       .end((err, res) => {
-        console.log(res.body);
-        console.log(userToken);
         expect(res.status).to.be.equal(200);
         expect(res.body).be.an('object');
         expect(res.body.status).be.a('string');
@@ -331,10 +331,8 @@ describe('User Get trips', () => {
     chai.request(app)
       .get('/api/v1/bookings')
       .send(user)
-      .set('token', token)
+      .set('token', admintoken)
       .end((err, res) => {
-        console.log('>>>>>>> admin body :', res.body);
-        console.log(token);
         expect(res.status).to.be.equal(200);
         expect(res.body).be.an('object');
         expect(res.body.status).be.a('string');
@@ -343,3 +341,31 @@ describe('User Get trips', () => {
       });
   });
 });
+
+describe('Delete Book Trips', () => {
+  it('lets User delete a booking', (done) => {
+    chai.request(app)
+      .delete('/api/v1/bookings/23')
+      .set('token', usertoken)
+      .end((err, res) => {
+        console.log(res.body);
+        expect(res.status).to.be.equal(200);
+        expect(res.body).be.an('object');
+        expect(res.body.status).be.a('string');
+        expect(res.body.data).be.an('object');
+        expect(res.body.status).to.equal('success');
+        done();
+      });
+  });
+
+  it('No booking found', (done) => {
+    chai.request(app)
+      .delete('/api/v1/bookings/0')
+      .set('token', userToken)
+      .end((err, res) => {
+        expect(res.status).to.be.equal(404);
+        expect(res.body).be.an('object');
+        done();
+      });
+  });
+})
