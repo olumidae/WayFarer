@@ -46,7 +46,6 @@ export const tokenValidator = {
     } else {
       return res.status(400).json({ status: 'error', error: 'token not provided' });
     }
-
   },
 
   async validateAdminToken(req, res, next) {
@@ -83,7 +82,7 @@ export const verifyUser = (req, res, next) => {
         status: 500,
         error: 'Failed to Authenticate token',
       });
-    }   
+    }
     req.user = decoded;
   });
   if (req.user.is_admin === Boolean(true)) {
@@ -130,8 +129,8 @@ export const booktripValidate = (req, res, next) => {
   return next();
 };
 
-export const deletebooktripValidate = (req, res, next) => {
-  const { error } = authenticateBook.deletebookingValidator(req.body);
+export const editBookedSeatValidate = (req, res, next) => {
+  const { error } = authenticateBook.editBookedSeat(req.body);
   if (error) return res.status(400).json({ status: 400, error: error.details[0].message });
   return next();
 };

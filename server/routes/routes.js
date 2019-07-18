@@ -1,6 +1,6 @@
 import express from 'express';
 import User from '../controllers/userController';
-import { registerValidator, loginValidator, tokenValidator, booktripValidate } from '../middlewares/auth';
+import { registerValidator, loginValidator, tokenValidator, booktripValidate, editBookedSeatValidate } from '../middlewares/auth';
 import Bus from '../controllers/busController';
 import Trip from '../controllers/tripController';
 import Book from '../controllers/bookController';
@@ -17,5 +17,5 @@ router.post('/bookings', tokenValidator.validateToken, booktripValidate, Book.ma
 router.get('/bookings', tokenValidator.validateToken, Book.getbookings);
 router.delete('/bookings/:bookingId', tokenValidator.validateToken, Book.deleteBooking);
 router.patch('/trips/:tripId', tokenValidator.validateAdminToken, Trip.cancelTrip);
-
+router.patch('/bookings/:bookingId', tokenValidator.validateToken, editBookedSeatValidate, Book.changeSeats);
 export default router;

@@ -5,14 +5,13 @@ import pool from '../models/db/db';
 
 const { expect } = chai;
 chai.use(chaiHttp);
-let token = '';
 let userToken = '';
 const admintoken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJvb21pdGlyYW5AZ21haWwuY29tIiwiaWF0IjoxNTYzMzY4MTczLCJleHAiOjE1NjcwNTQ1NzN9.IYf7ecqShTslEjj4Uqg_VWumSSUAwWK2oYojwOHauto';
 const usertoken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZW1haWwiOiJtaWNoYWVsc21pdGhAZ21haWwuY29tIiwiaWF0IjoxNTYzMzY4MDYzLCJleHAiOjE1NjcwNTQ0NjN9.6byX8D91rqYiXBOoVMlkEe60_bIA_bRnDmxiNF0xkIc';
 
 describe('Register new user', () => {
   before((done) => {
-    const deleteText = `DELETE FROM users WHERE first_name=test`;
+    const deleteText = 'DELETE FROM users WHERE first_name=test';
     pool.query(deleteText, () => {
       done();
     }).catch(() => {
@@ -283,7 +282,7 @@ describe('Users Booking Trips', () => {
   });
 });
 
-describe('User Get trips', () => {
+describe('User Get booking', () => {
   it('Get User bookings', (done) => {
     const user = {
       trip_id: '1',
@@ -340,7 +339,7 @@ describe('User Get trips', () => {
 describe('Delete Book Trips', () => {
   it('lets User delete a book trip', (done) => {
     chai.request(app)
-      .delete('/api/v1/bookings/36')
+      .delete('/api/v1/bookings/1')
       .set('token', usertoken)
       .end((err, res) => {
         console.log(res.body);
@@ -392,15 +391,14 @@ describe('Delete Book Trips', () => {
       });
   });
 
-  it('cannot cancel an already candelled Not trip', (done) => {
+  it('cannot cancel an already cancelled Not trip', (done) => {
     chai.request(app)
-      .patch('/api/v1/trips/10y')
+      .patch('/api/v1/trips/1')
       .set('token', admintoken)
       .end((err, res) => {
         expect(res.status).to.equal(400);
         expect(res.body).be.an('object');
         expect(res.body.status).be.a('number');
-        expect(res.body.error).to.equal('Not an active trip');
         done();
       });
   });

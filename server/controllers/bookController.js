@@ -178,6 +178,58 @@ const Book = {
     }
   },
 
+  async changeSeats(req, res) {
+    try {
+      const { email, id: user_id } = req.user;
+      const { bookingId } = req.params;
+      const { seat_number } = req.body;
+
+      const checkBooking = {
+        text: 'SELECT * FROM booking where id = $1 AND user_id = $2',
+        values: [bookingId, user_id],
+      };
+      const { rows } = await pool.query(checkBooking);
+      if (!rows[0]) {
+        return res.status(404).json({
+          status: 404,
+          error: 'No booking found',
+        });
+      }
+      const checknumber = {
+        text: 'SELECT * FROM booking where trip_id = $1  AND seat_number = $2',
+        values: [rows[0].trip_id, seat_number],
+      };
+      const { rows: seats } = await pool.query(checknumber);
+      if (seats[0]) {
+        return res.status(401).json({
+          status: 401,
+          error: 'seat already taken',
+        });
+      }
+
+      const changeSeat = {
+        text: 'UPDATE booking SET seat_number = $1 WHERE id = $2 RETURNING *',
+        values: [seat_number, bookingId],
+      };
+      const { rows: changed } = await pool.query(changeSeat);
+      return res.status(201).json({
+        status: 'success',
+        data: {
+          bookingId,
+          user_id,
+          trip_id: changed[0].trip_id,
+          seat_number,
+          email,
+        },
+      });
+    } catch (error) {
+      return res.status(500).json({
+        status: 500,
+        error: `Internal server error ${error.message}`,
+      });
+    }
+  },
+
 };
 
 export default Book;
