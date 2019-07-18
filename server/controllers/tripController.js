@@ -56,7 +56,7 @@ const Trip = {
           text: 'SELECT * FROM trip WHERE origin = $1',
           values: [origin],
         };
-        const { rows: orijin } = await db.query(getOrigin);
+        const { rows: orijin } = await pool.query(getOrigin);
         if (!orijin[0]) {
           return res.status(404).json({
             status: 404,

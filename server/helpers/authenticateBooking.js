@@ -10,5 +10,10 @@ const bookingValidator = (book) => {
   return jo.validate(book, bookingFormat);
 };
 
-
-export default { bookingValidator }
+const editBookedSeat = (book) => {
+  const seatEdit = {
+    seat_number: jo.number().required(),
+  };
+  return jo.validate(book, seatEdit);
+};
+export default { bookingValidator, editBookedSeat };
