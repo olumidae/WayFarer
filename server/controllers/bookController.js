@@ -121,8 +121,8 @@ const Book = {
       };
       const { rows } = await pool.query(checkBooking);
       if (!rows[0]) {
-        return res.status(404).json({
-          status: 404,
+        return res.status(400).json({
+          status: 400,
           error: 'No booking found',
         });
       }
