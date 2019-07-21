@@ -7,5 +7,4 @@ before_install:
 
 script:
   - npm run setup-db
-  - npm run seed-db
   - npm test
