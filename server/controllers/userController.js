@@ -19,7 +19,7 @@ const User = {
     const values = [first_name, last_name, email, hashPassword];
     const { rows } = await pool.query(existingEmail, [email]);
 
-    if (rows[0].email === email) return res.status(400).json({ status: 'error', error: 'User already exists' });
+    if (rows[0] && rows[0].email === email) return res.status(400).json({ status: 'error', error: 'User already exists' });
 
     try {
       const { rows: rowsInsert } = await pool.query(queryText, values);

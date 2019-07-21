@@ -7,23 +7,27 @@ import authenticateTrip from '../helpers/authenticateTrip';
 const Trip = {
 
   async createTrip(req, res) {
-    const { error } = authenticateTrip.tripValidator(req.body);
-    if (error) return res.status(400).json({ status: 400, error: error.details[0].message });
-
     const createTrip = `INSERT INTO trip ( bus_id, origin, destination, trip_date, fare) VALUES($1, $2, $3, $4, $5)
     RETURNING *`;
     const { bus_id, origin, destination, trip_date, fare } = req.body;
-    const formatted_date = moment(trip_date).format('lll');
+    const formatted_date = moment(trip_date).format('YYYY-MM-DD');
+    if (formatted_date === 'Invalid date') {
+      return res.status(406).json({
+        status: 406,
+        error: 'Please input date in YYYY-MM-DD format',
+      });
+    }
     const values = [bus_id, origin, destination, formatted_date, fare];
     const checkbus = {
       text: 'SELECT * FROM bus WHERE id = $1',
       values: [bus_id],
     };
     const { rows } = await pool.query(checkbus);
+
     if (!rows[0]) {
       return res.status(404).json({
         status: 404,
-        error: 'Not an available bus',
+        error: 'Bus not available',
       });
     }
     try {
@@ -32,7 +36,7 @@ const Trip = {
         status: 'success',
         data: {
           trip_id: rowsInsert[0].id,
-          bus_id: rowsInsert[0].bus_id,
+          bus_id: rows[0].id,
           origin: rowsInsert[0].origin,
           destination: rowsInsert[0].destination,
           trip_date: rowsInsert[0].formatted_date,
@@ -108,7 +112,6 @@ const Trip = {
   async cancelTrip(req, res) {
     try {
       const { tripId } = req.params;
-      console.log(tripId);
       const checkTrip = {
         text: 'SELECT * FROM trip WHERE id = $1 and status = $2',
         values: [tripId, 'active'],

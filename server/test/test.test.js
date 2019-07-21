@@ -5,41 +5,48 @@ import pool from '../models/db/db';
 
 const { expect } = chai;
 chai.use(chaiHttp);
-let userToken = '';
-const admintoken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJvb21pdGlyYW5AZ21haWwuY29tIiwiaWF0IjoxNTYzMzY4MTczLCJleHAiOjE1NjcwNTQ1NzN9.IYf7ecqShTslEjj4Uqg_VWumSSUAwWK2oYojwOHauto';
-const usertoken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZW1haWwiOiJtaWNoYWVsc21pdGhAZ21haWwuY29tIiwiaWF0IjoxNTYzMzY4MDYzLCJleHAiOjE1NjcwNTQ0NjN9.6byX8D91rqYiXBOoVMlkEe60_bIA_bRnDmxiNF0xkIc';
-
-describe('Register new user', () => {
+let admintoken = '';
+let token = '';
+describe('User Authentication', () => {
   before((done) => {
-    const deleteText = 'DELETE FROM users WHERE first_name=test';
-    pool.query(deleteText, () => {
-      done();
+    const createAdmin = `INSERT INTO users (
+        id, email, first_name, last_name, password, is_admin, is_loggedin
+        ) VALUES
+         ('2', 'oomitiran@gmail.com', 'Olumide', 'Omitiran', '$2b$10$M7KDGr9g3tKfFWC0RpuXI.mZPlEkZarOSQTmhKIxh4GXVRb2OscrO', 'true', 'false')`;
+    const deleteBooking = 'DELETE FROM users';
+    const deleteText = 'DELETE FROM users;';
+    pool.query(deleteBooking, () => {
+      pool.query(createAdmin, () => {
+        done();
+      }).catch(() => {
+        console.log('');
+      });
     }).catch(() => {
       console.log('');
     });
   });
 
-  // it('Lets a new user register', (done) => {
-  //   chai
-  //     .request(app)
-  //     .post('/api/v1/auth/signup')
-  //     .send({
-  //       first_name: 'test',
-  //       last_name: 'user',
-  //       email: 'testuser@gmail.com',
-  //       password: 'password@123',
-  //     }).end((err, res) => {
-  //       expect(res.status).to.be.equal(201);
-  //       expect(res.body.status).to.equal('success');
-  //       expect(res.body).to.have.property('status');
-  //       expect(res.body).to.have.property('data');
-  //       expect(res.body.data).to.have.property('user_id');
-  //       expect(res.body.data).to.have.property('token');
-  //       expect(res.body.data).to.have.property('is_admin');
-  //       expect(res.body).to.be.an('object');
-  //       done();
-  //     });
-  // });
+  it('Lets a new user register', (done) => {
+    chai
+      .request(app)
+      .post('/api/v1/auth/signup')
+      .send({
+        first_name: 'test',
+        last_name: 'user',
+        email: 'testuser@gmail.com',
+        password: 'password@123',
+      }).end((err, res) => {
+        expect(res.status).to.be.equal(201);
+        expect(res.body.status).to.equal('success');
+        expect(res.body).to.have.property('status');
+        expect(res.body).to.have.property('data');
+        expect(res.body.data).to.have.property('user_id');
+        expect(res.body.data).to.have.property('token');
+        expect(res.body.data).to.have.property('is_admin');
+        expect(res.body).to.be.an('object');
+        done();
+      });
+  });
 
   it('is_admin property should be a boolean', (done) => {
     chai.request(app)
@@ -111,7 +118,7 @@ describe('Register new user', () => {
         expect(res.body.data).to.have.property('user_id');
         expect(res.body.data).to.have.property('token');
         expect(res.body).to.be.an('object');
-        userToken = res.body.data.token;
+        token = res.body.data.token;
         done();
       });
   });
@@ -147,40 +154,47 @@ describe('Register new user', () => {
         done();
       });
   });
-});
 
-describe('Create new trip', () => {
-  // before((done) => {
-  //   const queryText = 'DELETE FROM trip';
-  //   pool.query(queryText, () => {
-  //     const deleteText = 'DELETE FROM users';
-  //     pool.query(deleteText, () => {
-  //       const createAdmin = `INSERT INTO users (
-  //            id, email, first_name, last_name, password, is_admin, is_loggedin
-  //           ) VALUES
-  //           ('2', 'oomitiran@gmail.com', 'Olumide', 'Omitiran', '$2b$10$M7KDGr9g3tKfFWC0RpuXI.mZPlEkZarOSQTmhKIxh4GXVRb2OscrO', 'true', 'false')`;
-  //       pool.query(createAdmin, () => {
-  //         chai
-  //           .request(app)
-  //           .post('/api/v1/auth/signin')
-  //           .send({
-  //             email: 'oomitiran@gmail.com',
-  //             password: 'password@123',
-  //           }).end((err, res) => {
-  //             expect(res.status).to.equal(200);
-  //             token = res.body.data.token;
-  //             done();
-  //           });
-  //       }).catch(() => {
-  //         console.log('');
-  //       });
-  //     }).catch(() => {
-  //       console.log('');
-  //     });
-  //   }).catch(() => {
-  //     console.log('');
-  //   });
-  // });
+  it('Lets admin login', (done) => {
+    chai.request(app)
+      .post('/api/v1/auth/signin')
+      .send({
+        email: 'oomitiran@gmail.com',
+        password: 'password@123',
+      })
+      .end((err, res) => {
+        expect(res.status).to.be.equal(200);
+        expect(res.body.status).to.equal('success');
+        expect(res.body).to.have.property('status');
+        expect(res.body).to.have.property('data');
+        expect(res.body.data).to.have.property('user_id');
+        expect(res.body.data).to.have.property('token');
+        expect(res.body).to.be.an('object');
+        admintoken = res.body.data.token;
+        done();
+      });
+  });
+
+  it('lets Admin create a bus', (done) => {
+    chai
+      .request(app)
+      .post('/api/v1/bus')
+      .set('token', admintoken)
+      .send({
+        number_plate: 'FB030AAA',
+        manufacturer: 'Toyota',
+        model: 'Hiace',
+        year: '2019',
+        capacity: '18',
+      })
+      .end((err, res) => {
+        expect(res.body.status).to.have.equal('success');
+        expect(res.body).to.have.property('status');
+        expect(res.body).to.have.property('data');
+        expect(res.body).to.be.an('object');
+        done();
+      });
+  });
 
   it('lets Admin create new trip', (done) => {
     chai
@@ -190,12 +204,11 @@ describe('Create new trip', () => {
       .send({
         bus_id: '1',
         origin: 'Lagos',
-        destination: 'Saki',
+        destination: 'Ondo',
         trip_date: '2019-07-02',
         fare: '4000',
       })
       .end((err, res) => {
-        expect(res.status).to.equal(200);
         expect(res.body.status).to.have.equal('success');
         expect(res.body).to.have.property('status');
         expect(res.body).to.have.property('data');
@@ -209,7 +222,7 @@ describe('Create new trip', () => {
     chai
       .request(app)
       .post('/api/v1/trips')
-      .set('token', usertoken)
+      .set('token', token)
       .send({
         bus_id: '1',
         origin: 'Ibadan',
@@ -225,35 +238,54 @@ describe('Create new trip', () => {
       });
   });
 
-  it('it lets both and user get all trip', (done) => {
+  it('Admin Books a trip', (done) => {
+    const user = {
+      trip_id: '1',
+      seat_number: '4',
+    };
     chai
       .request(app)
-      .get('/api/v1/trips')
-      .set('token', usertoken)
-      .send({
-        // user_id: '1',
-        // is_admin: 'true',
-      })
+      .post('/api/v1/bookings')
+      .send(user)
+      .set('token', admintoken)
       .end((err, res) => {
-        expect(res.status).to.equal(200);
-        expect(res.body).to.have.property('status');
-        expect(res.body).to.have.property('data');
-        expect(res.body).to.be.an('object');
+        expect(res.status).to.be.equal(201);
+        expect(res.body).be.an('object');
+        expect(res.body.status).be.a('string');
+        expect(res.body.data).be.an('object');
         done();
       });
   });
-});
 
-describe('Users Booking Trips', () => {
-  it('Create booked trip', (done) => {
+  it('Get Admin bookings', (done) => {
     const user = {
-      trip_id: '4',
+      trip_id: '1',
       seat_number: '4',
     };
-    chai.request(app)
+    chai
+      .request(app)
+      .get('/api/v1/bookings')
+      .send(user)
+      .set('token', admintoken)
+      .end((err, res) => {
+        expect(res.status).to.be.equal(200);
+        expect(res.body).be.an('object');
+        expect(res.body.status).be.a('string');
+        expect(res.body.data).be.an('array');
+        done();
+      });
+  });
+
+  it('User Books a trip', (done) => {
+    const user = {
+      trip_id: '1',
+      seat_number: '5',
+    };
+    chai
+      .request(app)
       .post('/api/v1/bookings')
       .send(user)
-      .set('token', usertoken)
+      .set('token', token)
       .end((err, res) => {
         expect(res.status).to.be.equal(201);
         expect(res.body).be.an('object');
@@ -265,13 +297,14 @@ describe('Users Booking Trips', () => {
 
   it('doesnt allow seat number to booked twice', (done) => {
     const user = {
-      trip_id: '4',
-      seat_number: '4',
+      trip_id: '1',
+      seat_number: '5',
     };
-    chai.request(app)
+    chai
+      .request(app)
       .post('/api/v1/bookings')
       .send(user)
-      .set('token', usertoken)
+      .set('token', token)
       .end((err, res) => {
         expect(res.body.status).to.equal(409);
         expect(res.body).to.have.property('status');
@@ -280,18 +313,17 @@ describe('Users Booking Trips', () => {
         done();
       });
   });
-});
 
-describe('User Get booking', () => {
   it('Get User bookings', (done) => {
     const user = {
       trip_id: '1',
       seat_number: '5',
     };
-    chai.request(app)
+    chai
+      .request(app)
       .get('/api/v1/bookings')
       .send(user)
-      .set('token', usertoken)
+      .set('token', token)
       .end((err, res) => {
         expect(res.status).to.be.equal(200);
         expect(res.body).be.an('object');
@@ -306,7 +338,8 @@ describe('User Get booking', () => {
       trip_id: '1',
       seat_number: '5',
     };
-    chai.request(app)
+    chai
+      .request(app)
       .get('/api/v1/bookings')
       .send(user)
       .end((err, res) => {
@@ -317,32 +350,11 @@ describe('User Get booking', () => {
       });
   });
 
-  it('Get Admin bookings', (done) => {
-    const user = {
-      trip_id: '4',
-      seat_number: '2',
-    };
+  it('lets User delete a Booking', (done) => {
     chai.request(app)
-      .get('/api/v1/bookings')
-      .send(user)
-      .set('token', admintoken)
+      .delete('/api/v1/bookings/2')
+      .set('token', token)
       .end((err, res) => {
-        expect(res.status).to.be.equal(200);
-        expect(res.body).be.an('object');
-        expect(res.body.status).be.a('string');
-        expect(res.body.data).be.an('array');
-        done();
-      });
-  });
-});
-
-describe('Delete Book Trips', () => {
-  it('lets User delete a book trip', (done) => {
-    chai.request(app)
-      .delete('/api/v1/bookings/1')
-      .set('token', usertoken)
-      .end((err, res) => {
-        console.log(res.body);
         expect(res.status).to.be.equal(200);
         expect(res.body).be.an('object');
         expect(res.body.status).be.a('string');
@@ -355,10 +367,28 @@ describe('Delete Book Trips', () => {
   it('No booking found', (done) => {
     chai.request(app)
       .delete('/api/v1/bookings/0')
-      .set('token', userToken)
+      .set('token', token)
       .end((err, res) => {
-        expect(res.status).to.be.equal(404);
+        expect(res.status).to.be.equal(400);
         expect(res.body).be.an('object');
+        done();
+      });
+  });
+
+  it('it lets both and user get all trip', (done) => {
+    chai
+      .request(app)
+      .get('/api/v1/trips')
+      .set('token', admintoken)
+      .send({
+        // user_id: '1',
+        // is_admin: 'true',
+      })
+      .end((err, res) => {
+        expect(res.status).to.equal(200);
+        expect(res.body).to.have.property('status');
+        expect(res.body).to.have.property('data');
+        expect(res.body).to.be.an('object');
         done();
       });
   });
@@ -381,7 +411,7 @@ describe('Delete Book Trips', () => {
     chai
       .request(app)
       .patch('/api/v1/trips/1')
-      .set('token', usertoken)
+      .set('token', token)
       .end((err, res) => {
         expect(res.status).to.be.equal(403);
         expect(res.body).be.an('object');
@@ -402,4 +432,5 @@ describe('Delete Book Trips', () => {
         done();
       });
   });
+
 });
