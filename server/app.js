@@ -4,14 +4,14 @@ import 'core-js/stable';
 import 'regenerator-runtime/runtime';
 import bodyParser from 'body-parser';
 import dotenv from 'dotenv';
-
-
 import swaggerUi from 'swagger-ui-express';
 import swaggerSpec from './config/swagger';
 import router from './routes/routes';
 
+dotenv.config();
+
 const app = express();
-const PORT = process.env.port;
+const PORT = process.env.port || 7000;
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(cors('*'));
