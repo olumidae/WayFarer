@@ -6,7 +6,7 @@ import bodyParser from 'body-parser';
 
 import swaggerUi from 'swagger-ui-express';
 import swaggerSpec from './config/swagger';
-import router from './server/routes/routes';
+import router from './routes/routes';
 
 const app = express();
 const PORT = process.env.port || 7000;
