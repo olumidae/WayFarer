@@ -8,7 +8,7 @@
     "clean": "mkdir build",
     "build-babel": "babel -d ./build ./server -s",
     "build": "npm run clean && npm run build-babel",
-    "start": "node ./build/app.js",
+    "start": "npm run build && node ./build/app.js",
     "dev": "nodemon --exec babel-node app.js",
     "setup-db": "babel-node ./server/models/db/migration.js",
     "seed-db": "babel-node ./server/models/db/seeds.js",
