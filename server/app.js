@@ -3,13 +3,15 @@ import cors from 'cors';
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
 import bodyParser from 'body-parser';
+import dotenv from 'dotenv';
+
 
 import swaggerUi from 'swagger-ui-express';
 import swaggerSpec from './config/swagger';
 import router from './routes/routes';
 
 const app = express();
-const PORT = process.env.port || 7000;
+const PORT = process.env.port;
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(cors('*'));
